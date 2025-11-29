@@ -1,7 +1,7 @@
 'use client';
 
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
 
 interface ImageProcessorProps {
   onImageProcessed?: (content: string) => void;
@@ -19,11 +19,17 @@ const ImageProcessorSkeleton = () => (
 );
 
 // 使用Next.js的dynamic导入实现懒加载和代码分割
-const DynamicImageProcessor = dynamic(
+const DynamicImageProcessor = dynamic<ImageProcessorProps>(
   // 添加import的错误处理
   () => import('./ImageProcessor').then((module) => module.default).catch(error => {
     console.error('动态加载ImageProcessor组件失败:', error);
-    throw error; // 继续抛出错误让React处理
+    // 返回一个错误状态的组件，而不是直接抛出错误
+    return () => (
+      <div className="p-6 rounded-xl bg-red-900/30 border border-red-700/50">
+        <h3 className="text-red-300 font-medium mb-2">组件加载失败</h3>
+        <p className="text-red-200 text-sm">无法加载图像处理组件，请刷新页面重试。</p>
+      </div>
+    );
   }),
   {
     ssr: false, // 禁用服务端渲染，因为ImageProcessor组件包含客户端特定功能
@@ -33,24 +39,15 @@ const DynamicImageProcessor = dynamic(
 
 // 导出懒加载的ImageProcessor组件
 export default function LazyImageProcessor(props: ImageProcessorProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  
-  // 组件加载完成后的回调
-  const handleLoadComplete = () => {
-    setIsLoaded(true);
-  };
+  // 直接移除opacity控制，让组件始终显示
+  // 保留onLoadComplete回调，但不再用于控制组件的显示/隐藏
 
   return (
-    <div className={isLoaded ? 'opacity-100 transition-opacity duration-300' : ''}>
+    <div className="transition-opacity duration-300">
       <DynamicImageProcessor 
         {...props} 
-        onLoadComplete={() => {
-          handleLoadComplete();
-          // 如果props中有onLoadComplete，也调用它
-          if (props.onLoadComplete) {
-            props.onLoadComplete();
-          }
-        }}
+        // 直接传递props中的onLoadComplete
+        onLoadComplete={props.onLoadComplete}
       />
     </div>
   );

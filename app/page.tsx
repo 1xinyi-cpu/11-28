@@ -15,7 +15,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("history");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({});
-  const [selectedHeritage, setSelectedHeritage] = useState<typeof culturalHeritageItems[0] | null>(null);
+  // 已移除文化遗产预览功能
   
   // 滚动监听效果
   useEffect(() => {
@@ -365,8 +365,10 @@ export default function Home() {
             </h2>
             
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* 图片上传区和分析结果 */}
-              <div className="w-full">
+              {/* 图片上传区 */}
+              <div className="w-full bg-slate-900/60 rounded-xl p-6 border border-slate-700/50">
+                <h3 className="text-xl font-medium mb-4 text-white">上传图片</h3>
+                <p className="text-slate-300 mb-6 text-sm">上传荆州文化遗产相关图片，AI将为您分析其中的历史文化信息</p>
                 <LazyImageProcessor onImageProcessed={(content) => setAiGeneratedContent(content)} />
               </div>
             </div>
@@ -492,57 +494,12 @@ export default function Home() {
             {/* 文化遗产 */}
             {activeTab === "heritage" && (
               <div>
-                {selectedHeritage ? (
-                  <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4">
-                    {/* 返回按钮 */}
-                    <button 
-                      className="absolute top-4 left-4 bg-blue-600/80 hover:bg-blue-700 text-white p-2 rounded-full transition-colors duration-200 z-50"
-                      onClick={() => setSelectedHeritage(null)}
-                      aria-label="返回"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                      </svg>
-                    </button>
-                    
-                    {/* 图片展示 - 移除可能导致黑色方块的样式，调整布局 */}
-                    <div className="w-full max-w-4xl mb-6 flex justify-center items-center">
-                      <div className="overflow-hidden rounded-lg" style={{ maxHeight: '60vh', width: '100%' }}>
-                        <Image 
-                          src={selectedHeritage.image} 
-                          alt={selectedHeritage.title} 
-                          width={1200} 
-                          height={800} 
-                          className="w-full h-auto object-contain" // 移除可能导致问题的样式
-                          priority 
-                          unoptimized
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* 文字介绍 - 调整为绝对定位在底部，避免遮挡图片 */}
-                    <div className="w-full max-w-4xl bg-slate-900/95 rounded-xl p-6 border border-blue-900/50 max-h-[30vh] overflow-y-auto mt-4">
-                      <h2 className="text-2xl md:text-3xl font-bold mb-3 text-blue-400">{selectedHeritage.title}</h2>
-                      <p className="text-base md:text-lg text-slate-300 mb-4 leading-relaxed">{selectedHeritage.description}</p>
-                      <div className="bg-blue-900/20 border border-blue-800/30 rounded-lg p-4 shadow-lg shadow-blue-900/10">
-                        <h3 className="text-lg md:text-xl font-semibold mb-2 text-blue-300">详细介绍</h3>
-                        <p className="text-slate-300 leading-relaxed whitespace-pre-line">{selectedHeritage.details}</p>
-                      </div>
-                    </div>
-                    
-                    {/* 点击背景关闭 */}
-                    <div 
-                      className="absolute inset-0" 
-                      onClick={() => setSelectedHeritage(null)}
-                    ></div>
-                  </div>
-                ) : (
+
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {culturalHeritageItems.map((item, index) => (
                       <div 
                         key={index} 
-                        className="bg-slate-900/50 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/10 relative overflow-hidden cursor-pointer"
-                        onClick={() => setSelectedHeritage(item)}
+                        className="bg-slate-900/50 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-700 hover:border-blue-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-500/10 relative overflow-hidden"
                       >
                         <div className="h-48 overflow-hidden bg-slate-800 flex items-center justify-center transition-all duration-300 ease-out">
                           <Image 
@@ -566,8 +523,7 @@ export default function Home() {
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
+                </div>
               </div>
             )}
             
